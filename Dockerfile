@@ -19,8 +19,12 @@ COPY . .
 # Construye el frontend (Create React App) dentro de "frontend/"
 RUN cd frontend && npm run build
 
+# Copia la carpeta de build a la raíz, quedando en /app/build
+RUN cp -R ./frontend/build ./build
+
 # Expone el puerto en el que correrá la aplicación
 EXPOSE 5001
 
-# Comando de inicio del servidor que sirve el frontend compilado
-CMD ["npx", "start-server", "./frontend/build"]
+# Comando de inicio del servidor que sirve /app/build
+CMD ["npx", "start-server", "./build"]
+
