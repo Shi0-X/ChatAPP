@@ -1,8 +1,9 @@
+// src/App.test.js
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import App from './components/App.jsx';
 
-test('renders learn react link', () => {
+test('renders text from App component', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const heading = screen.getByText(/Hexlet Chat/i);
+  expect(heading).toBeInTheDocument();
 });
