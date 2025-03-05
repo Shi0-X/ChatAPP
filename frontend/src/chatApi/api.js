@@ -1,4 +1,4 @@
-// src/api.js
+// frontend/src/chatApi/api.js
 import axios from 'axios';
 
 // Obtener el token desde localStorage
@@ -9,10 +9,10 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Permite enviar cookies si el backend lo necesita
+  withCredentials: true, // Si tu backend requiere cookies
 });
 
-// Interceptor para agregar el token en cada solicitud
+// Interceptor de petición: agregar Authorization si hay token
 api.interceptors.request.use(
   (config) => {
     const token = getToken();
@@ -24,16 +24,32 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+// Interceptor de respuesta: manejar 401 (token inválido o expirado)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Borramos el token del localStorage
+      localStorage.removeItem('token');
+      // Forzamos al usuario a /login
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// ----- FUNCIONES DE LOGIN, GET CHANNELS, GET MESSAGES ----- //
+
 // Función de Login (almacena el token correctamente)
 export const login = async (username, password) => {
   try {
     const response = await api.post('/login', { username, password });
     const { token } = response.data;
     if (token) {
-      localStorage.setItem('token', token); // Se guarda el token
+      localStorage.setItem('token', token); // Se guarda el token en localStorage
     }
     console.log('✅ Login exitoso:', response.data);
-    return response.data;
+    return response.data; // { token, username, ...}
   } catch (error) {
     console.error('🚨 Error en login:', error);
     throw error;

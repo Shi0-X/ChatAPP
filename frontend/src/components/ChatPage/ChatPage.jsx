@@ -1,41 +1,63 @@
-// src/components/ChatPage/ChatPage.jsx
-import React, { useEffect, useState } from 'react';
-import { getChannels, getMessages } from '../../api.js';
+// frontend/src/components/ChatPage/ChatPage.jsx
+import React, { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchInitialData } from '../../slices/thunks.js';
+import { useSocket } from '../../contexts/SocketProvider.jsx';
+import { messageReceived } from '../../slices/messagesSlice.js';
+import ChannelsBox from './Channels/ChannelsBox.jsx';
+import MessagesBox from './Messages/MessagesBox.jsx';
+import MessageForm from './Messages/MessageForm.jsx';
 
 function ChatPage() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [channels, setChannels] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const dispatch = useDispatch();
+  const socket = useSocket();
 
+  // Al montar, si está autenticado, cargamos canales y mensajes
   useEffect(() => {
     if (!isAuthenticated) {
-      // Si no está autenticado, redirigir a /login
       navigate('/login');
       return;
     }
-    // Caso contrario, cargar canales y mensajes
-    getChannels().then(setChannels);
-    getMessages().then(setMessages);
-  }, [isAuthenticated, navigate]);
+    dispatch(fetchInitialData());
+  }, [isAuthenticated, navigate, dispatch]);
+
+  // Suscribirse al evento 'newMessage' emitido por el servidor
+  // cuando alguien hace POST /api/v1/messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (payload) => {
+      console.log('Recibido evento newMessage desde el servidor:', payload);
+      // payload = { id, body, channelId, username, ... }
+      dispatch(messageReceived(payload));
+    };
+
+    socket.on('newMessage', handleNewMessage);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+    };
+  }, [socket, dispatch]);
 
   return (
-    <div>
-      <h1>Lista de Canales</h1>
-      <ul>
-        {channels.map((channel) => (
-          <li key={channel.id}>{channel.name}</li>
-        ))}
-      </ul>
-
-      <h1>Lista de Mensajes</h1>
-      <ul>
-        {messages.map((msg) => (
-          <li key={msg.id}>{msg.body}</li>
-        ))}
-      </ul>
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <div style={{
+        width: '250px',
+        borderRight: '1px solid #ccc',
+        padding: '1rem',
+        overflowY: 'auto',
+      }}
+      >
+        <ChannelsBox />
+      </div>
+      <div style={{ flex: 1, padding: '1rem', overflowY: 'auto' }}>
+        <MessagesBox />
+        <MessageForm />
+      </div>
     </div>
   );
 }

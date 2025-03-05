@@ -1,16 +1,15 @@
-// src/components/LoginPage/LoginPage.jsx
+// frontend/src/components/LoginPage/LoginPage.jsx
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { login as loginRequest } from '../../api.js';
+import { login as loginRequest } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
   const [authError, setAuthError] = useState(null);
-  const { logIn } = useAuth();       // Para guardar el token en el AuthContext
-  const navigate = useNavigate();    // Para redirigir
-  
+  const { logIn } = useAuth(); // AuthProvider: guarda token en el context
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().required('El nombre de usuario es requerido'),
@@ -25,13 +24,13 @@ function LoginPage() {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setAuthError(null);
+      // Llamamos a loginRequest (POST /login)
       const { token } = await loginRequest(values.username, values.password);
-      // Guardamos el token en nuestro AuthContext
+      // Guardamos el token en AuthProvider
       logIn(token);
-      // Redirigimos al chat (/)
+      // Redirigimos a "/"
       navigate('/');
     } catch (error) {
-      // Manejo de error (por ejemplo, credenciales inválidas)
       setAuthError('Usuario o contraseña inválidos');
     } finally {
       setSubmitting(false);
