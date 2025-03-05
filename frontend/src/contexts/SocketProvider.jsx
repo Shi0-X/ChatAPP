@@ -7,16 +7,15 @@ const SocketContext = createContext(null);
 export const useSocket = () => useContext(SocketContext);
 
 function SocketProvider({ children }) {
-  // Detectar entorno: si es 'production', usar el dominio de Railway
-  const isProduction = process.env.NODE_ENV === 'production';
-  // Ajusta la URL a tu dominio real en Railway
-  const productionUrl = 'https://chatapp-production-b85f.up.railway.app';
+  // Detecta si el navegador está apuntando a localhost o no
+  const isLocalhost = window.location.hostname === 'localhost';
 
-  const socketUrl = isProduction
-    ? productionUrl
-    : 'http://localhost:5001';
+  // Si es localhost, conecta a http://localhost:5001
+  // Si es cualquier otro dominio, asume que estás en Railway
+  const socketUrl = isLocalhost
+    ? 'http://localhost:5001'
+    : 'https://chatapp-production-b85f.up.railway.app';
 
-  // Crea la conexión solo una vez, dependiendo de socketUrl
   const socket = useMemo(() => io(socketUrl), [socketUrl]);
 
   return (
