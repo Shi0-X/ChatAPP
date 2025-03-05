@@ -7,11 +7,17 @@ const SocketContext = createContext(null);
 export const useSocket = () => useContext(SocketContext);
 
 function SocketProvider({ children }) {
-  // Crea la conexión solo una vez
-  const socket = useMemo(() => io('http://localhost:5001', {
-    // Si tu backend requiere un token en la handshake,
-    // podrías pasar auth: { token: localStorage.getItem('token') }
-  }), []);
+  // Detectar entorno: si es 'production', usar el dominio de Railway
+  const isProduction = process.env.NODE_ENV === 'production';
+  // Ajusta la URL a tu dominio real en Railway
+  const productionUrl = 'https://chatapp-production-b85f.up.railway.app';
+
+  const socketUrl = isProduction
+    ? productionUrl
+    : 'http://localhost:5001';
+
+  // Crea la conexión solo una vez, dependiendo de socketUrl
+  const socket = useMemo(() => io(socketUrl), [socketUrl]);
 
   return (
     <SocketContext.Provider value={socket}>
