@@ -4,8 +4,9 @@ import axios from 'axios';
 // Obtener el token desde localStorage
 const getToken = () => localStorage.getItem('token') || null;
 
+// Ruta base RELATIVA => '/api/v1'
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api/v1',
+  baseURL: '/api/v1', 
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,9 +30,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Borramos el token del localStorage
       localStorage.removeItem('token');
-      // Forzamos al usuario a /login
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -46,7 +45,7 @@ export const login = async (username, password) => {
     const response = await api.post('/login', { username, password });
     const { token } = response.data;
     if (token) {
-      localStorage.setItem('token', token); // Se guarda el token en localStorage
+      localStorage.setItem('token', token); 
     }
     console.log('✅ Login exitoso:', response.data);
     return response.data; // { token, username, ...}
