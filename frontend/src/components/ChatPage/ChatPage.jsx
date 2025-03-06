@@ -6,9 +6,19 @@ import { useDispatch } from 'react-redux';
 import { fetchInitialData } from '../../slices/thunks.js';
 import { useSocket } from '../../contexts/SocketProvider.jsx';
 import { messageReceived } from '../../slices/messagesSlice.js';
+import {
+  addChannel,
+  removeChannel,
+  renameChannel,
+} from '../../slices/thunks.js';
 import ChannelsBox from './Channels/ChannelsBox.jsx';
 import MessagesBox from './Messages/MessagesBox.jsx';
 import MessageForm from './Messages/MessageForm.jsx';
+
+// Modales
+import Add from './Modals/Add.jsx';
+import Remove from './Modals/Remove.jsx';
+import Rename from './Modals/Rename.jsx';
 
 function ChatPage() {
   const { isAuthenticated } = useAuth();
@@ -16,7 +26,6 @@ function ChatPage() {
   const dispatch = useDispatch();
   const socket = useSocket();
 
-  // Al montar, si está autenticado, cargamos canales y mensajes
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
@@ -25,21 +34,41 @@ function ChatPage() {
     dispatch(fetchInitialData());
   }, [isAuthenticated, navigate, dispatch]);
 
-  // Suscribirse al evento 'newMessage' emitido por el servidor
-  // cuando alguien hace POST /api/v1/messages
+  // Suscribirse a los eventos de sockets
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = (payload) => {
-      console.log('Recibido evento newMessage desde el servidor:', payload);
-      // payload = { id, body, channelId, username, ... }
+      console.log('Recibido evento newMessage:', payload);
       dispatch(messageReceived(payload));
     };
 
+    // Opcional: si el backend emite 'newChannel', 'removeChannel', 'renameChannel'
+    // y deseas actualizarlos en tiempo real sin esperar la respuesta HTTP:
+    const handleNewChannel = (payload) => {
+      console.log('Recibido evento newChannel:', payload);
+      // Podrías despachar addChannel.fulfilled manualmente, etc.
+      // O volver a fetch channels. Depende de tu lógica.
+    };
+    const handleRemoveChannel = (payload) => {
+      console.log('Recibido evento removeChannel:', payload);
+      // idem, despachar removeChannel.fulfilled manual o refrescar.
+    };
+    const handleRenameChannel = (payload) => {
+      console.log('Recibido evento renameChannel:', payload);
+      // idem
+    };
+
     socket.on('newMessage', handleNewMessage);
+    socket.on('newChannel', handleNewChannel);
+    socket.on('removeChannel', handleRemoveChannel);
+    socket.on('renameChannel', handleRenameChannel);
 
     return () => {
       socket.off('newMessage', handleNewMessage);
+      socket.off('newChannel', handleNewChannel);
+      socket.off('removeChannel', handleRemoveChannel);
+      socket.off('renameChannel', handleRenameChannel);
     };
   }, [socket, dispatch]);
 
@@ -58,6 +87,11 @@ function ChatPage() {
         <MessagesBox />
         <MessageForm />
       </div>
+
+      {/* Modales */}
+      <Add />
+      <Remove />
+      <Rename />
     </div>
   );
 }
