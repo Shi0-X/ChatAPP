@@ -10,7 +10,7 @@ export const useAuth = () => useContext(AuthContext);
 function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
 
-  // Al montar el AuthProvider, verificamos si hay un token en localStorage
+  // Al montar, verificamos si hay token en localStorage
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
@@ -18,7 +18,7 @@ function AuthProvider({ children }) {
     }
   }, []);
 
-  // Función para hacer login
+  // Función para hacer login (recibe newToken desde el login real)
   const logIn = (newToken) => {
     setToken(newToken);
     localStorage.setItem('token', newToken);
@@ -28,11 +28,11 @@ function AuthProvider({ children }) {
   const logOut = () => {
     setToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('username'); // Por si acaso
   };
 
   const isAuthenticated = Boolean(token);
 
-  // Proveemos el valor a toda la aplicación
   const value = {
     token,
     isAuthenticated,

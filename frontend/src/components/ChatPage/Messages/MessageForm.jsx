@@ -1,12 +1,16 @@
 // frontend/src/components/ChatPage/Messages/MessageForm.jsx
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addMessage } from '../../../slices/thunks.js'; // Ajusta la ruta
-
+import { useDispatch, useSelector } from 'react-redux';
+import { addMessage } from '../../../slices/thunks.js';
 
 function MessageForm() {
   const dispatch = useDispatch();
   const [text, setText] = useState('');
+
+  const currentChannelId = useSelector((state) => state.channels.currentChannelId);
+
+  // Leemos el username desde localStorage
+  const username = localStorage.getItem('username') || 'anon';
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,14 +21,14 @@ function MessageForm() {
       return;
     }
 
-    console.log('Enviando mensaje con addMessage:', {
+    const payload = {
       body: text,
-      channelId: 1,
-      username: 'admin',
-    });
+      channelId: currentChannelId,
+      username, // leer la clave real
+    };
 
-    // Llamamos al thunk => POST /api/v1/messages
-    dispatch(addMessage({ channelId: 1, body: text, username: 'admin' }));
+    console.log('Enviando mensaje con addMessage:', payload);
+    dispatch(addMessage(payload));
 
     setText('');
   };

@@ -30,7 +30,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
+      // Borramos el token y username
       localStorage.removeItem('token');
+      localStorage.removeItem('username');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -39,16 +41,29 @@ api.interceptors.response.use(
 
 // ----- FUNCIONES DE LOGIN, GET CHANNELS, GET MESSAGES ----- //
 
-// Función de Login (almacena el token correctamente)
+// Función de Login
 export const login = async (username, password) => {
   try {
     const response = await api.post('/login', { username, password });
-    const { token } = response.data;
-    if (token) {
-      localStorage.setItem('token', token); 
+    // Log para ver la respuesta exacta del servidor:
+    console.log('=== Respuesta del servidor al login ===', response.data);
+
+    // Suponiendo que el backend manda { token, username }
+    const { token, username: returnedUser } = response.data || {};
+
+    console.log('Desestructurado: token=', token, 'username=', returnedUser);
+
+    // Si hay token y username, los guardamos en localStorage
+    if (token && returnedUser) {
+      console.log('Guardando en localStorage:', token, returnedUser);
+      localStorage.setItem('token', token);
+      localStorage.setItem('username', returnedUser);
+    } else {
+      console.warn('El servidor no devolvió username o token');
     }
+
     console.log('✅ Login exitoso:', response.data);
-    return response.data; // { token, username, ...}
+    return response.data; // { token, username: returnedUser, ...}
   } catch (error) {
     console.error('🚨 Error en login:', error);
     throw error;
