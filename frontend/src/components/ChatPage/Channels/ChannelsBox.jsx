@@ -4,11 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { openModal } from '../../../slices/modalSlice.js';
 import { setCurrentChannelId } from '../../../slices/channelsSlice.js';
 import Channel from './Channel.jsx';
+import { useTranslation } from 'react-i18next';
 
 function ChannelsBox() {
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels.items);
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
+
+  const { t } = useTranslation();
 
   const handleAddChannel = () => {
     dispatch(openModal({ type: 'addChannel' }));
@@ -29,7 +32,9 @@ function ChannelsBox() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Canales</h2>
+        {/* "Canales" => t('channelsTitle') => "Channels" */}
+        <h2>{t('channelsTitle')}</h2>
+        {/* Botón + => Podrías usar t('modal.add') => "Add channel" o dejar + */}
         <button type="button" onClick={handleAddChannel}>+</button>
       </div>
       <ul>
@@ -46,8 +51,14 @@ function ChannelsBox() {
             {/* Menú de opciones si es removable */}
             {ch.removable && (
               <span style={{ marginLeft: '10px' }}>
-                <button type="button" onClick={() => handleRemoveChannel(ch.id)}>Remove</button>
-                <button type="button" onClick={() => handleRenameChannel(ch.id)}>Rename</button>
+                {/* "Remove" => t('modal.remove') => "Remove" */}
+                <button type="button" onClick={() => handleRemoveChannel(ch.id)}>
+                  {t('modal.remove')}
+                </button>
+                {/* "Rename" => t('modal.rename') => "Rename" */}
+                <button type="button" onClick={() => handleRenameChannel(ch.id)}>
+                  {t('modal.rename')}
+                </button>
               </span>
             )}
           </li>

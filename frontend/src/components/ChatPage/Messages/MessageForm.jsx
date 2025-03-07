@@ -1,26 +1,29 @@
 // frontend/src/components/ChatPage/Messages/MessageForm.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '../../../slices/thunks.js';
 import { useAuth } from '../../../contexts/AuthProvider.jsx';
+import { addMessage } from '../../../slices/thunks.js';
+import { useTranslation } from 'react-i18next';
 
 function MessageForm() {
   const dispatch = useDispatch();
   const [text, setText] = useState('');
-
+  const { username } = useAuth();
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
 
-  // Leemos el username real desde AuthProvider
-  const { username } = useAuth();
+  const { t } = useTranslation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      console.log(t('messageBody')); // "Message cannot be empty"
+      return;
+    }
 
     const payload = {
       body: text,
       channelId: currentChannelId,
-      username: username || 'anon', // fallback si no hay username
+      username: username || 'anon',
     };
 
     dispatch(addMessage(payload));
@@ -29,15 +32,18 @@ function MessageForm() {
 
   return (
     <div>
-      <h3>Nuevo Mensaje</h3>
+      {/* "Nuevo Mensaje" => t('newMessage') => "New message" */}
+      <h3>{t('newMessage')}</h3>
       <form onSubmit={handleSubmit}>
+        {/* placeholder="Escribe tu mensaje..." => t('placeholders.newMessage') => "Enter a message..." */}
         <input
           type="text"
-          placeholder="Escribe tu mensaje..."
+          placeholder={t('placeholders.newMessage')}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <button type="submit">Enviar</button>
+        {/* "Enviar" => t('send') => "Send" */}
+        <button type="submit">{t('send')}</button>
       </form>
     </div>
   );

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
+import { useTranslation } from 'react-i18next';
 
 function Add() {
   const dispatch = useDispatch();
@@ -12,7 +13,8 @@ function Add() {
   const { items: channels } = useSelector((state) => state.channels);
   const { isOpen, type } = useSelector((state) => state.modal);
 
-  // Enfocar el input al abrir el modal
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (type === 'addChannel' && isOpen && inputRef.current) {
       inputRef.current.focus();
@@ -22,17 +24,17 @@ function Add() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!channelName.trim()) return;
-    // Validar que no se repita el nombre
+
     const alreadyExists = channels.some((ch) => ch.name === channelName.trim());
     if (alreadyExists) {
-      alert('Ese nombre de canal ya existe.');
+      alert(t('modal.unique')); // "Must be unique"
       return;
     }
     try {
       await dispatch(addChannel({ name: channelName.trim() })).unwrap();
       dispatch(closeModal());
     } catch (err) {
-      console.error('Error al crear canal:', err);
+      console.error(t('errors.channelAdd'), err); // "Error adding channel"
     }
   };
 
@@ -41,23 +43,27 @@ function Add() {
   };
 
   if (type !== 'addChannel' || !isOpen) {
-    return null; // No renderiza si no es el modal actual
+    return null;
   }
 
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>Añadir Canal</h2>
+        {/* "Añadir Canal" => t('modal.add') => "Add channel" */}
+        <h2>{t('modal.add')}</h2>
         <form onSubmit={handleSubmit}>
+          {/* placeholder="Nombre del canal" => t('modal.channelName') => "Channel name" */}
           <input
             ref={inputRef}
             type="text"
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
-            placeholder="Nombre del canal"
+            placeholder={t('modal.channelName')}
           />
-          <button type="submit">Crear</button>
-          <button type="button" onClick={handleCancel}>Cancelar</button>
+          {/* "Crear" => t('send') / "Create"? Podrías usar "send" o algo distinto */}
+          <button type="submit">{t('send')}</button>
+          {/* "Cancelar" => t('cancel') => "Cancel" */}
+          <button type="button" onClick={handleCancel}>{t('cancel')}</button>
         </form>
       </div>
     </div>

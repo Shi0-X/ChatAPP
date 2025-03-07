@@ -2,18 +2,22 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
 import { login as loginRequest } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
-import { useNavigate, Link } from 'react-router-dom';
 
 function LoginPage() {
+  const { t } = useTranslation(); // Importamos useTranslation de react-i18next
   const [authError, setAuthError] = useState(null);
-  const { logIn } = useAuth(); // AuthProvider: guarda token y username
+  const { logIn } = useAuth();
   const navigate = useNavigate();
 
+  // Usamos las claves de tu archivo en.js para los mensajes de validación
   const validationSchema = Yup.object().shape({
-    username: Yup.string().required('El nombre de usuario es requerido'),
-    password: Yup.string().required('La contraseña es requerida'),
+    username: Yup.string().required(t('errors.required')),
+    password: Yup.string().required(t('errors.required')),
   });
 
   const initialValues = {
@@ -24,14 +28,12 @@ function LoginPage() {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setAuthError(null);
-      // Llamamos a loginRequest (POST /login)
       const { token, username: returnedUser } = await loginRequest(values.username, values.password);
-      // Guardamos token y username en AuthProvider
       logIn(token, returnedUser);
-      // Redirigimos a "/"
       navigate('/');
     } catch (error) {
-      setAuthError('Usuario o contraseña inválidos');
+      // Si falla, mostramos el error de credenciales inválidas (invalidFeedback)
+      setAuthError(t('invalidFeedback'));
     } finally {
       setSubmitting(false);
     }
@@ -39,7 +41,10 @@ function LoginPage() {
 
   return (
     <div>
-      <h2>Iniciar sesión</h2>
+      {/* Título de la página: 'entry' => "Log in" */}
+      <h2>{t('entry')}</h2>
+
+      {/* Error de autenticación si las credenciales son inválidas */}
       {authError && <div style={{ color: 'red' }}>{authError}</div>}
 
       <Formik
@@ -50,28 +55,32 @@ function LoginPage() {
         {({ isSubmitting }) => (
           <Form>
             <div>
-              <label htmlFor="username">Usuario</label>
+              {/* Label para username -> 'placeholders.username' => "Username" */}
+              <label htmlFor="username">{t('placeholders.username')}</label>
               <Field id="username" name="username" type="text" />
               <ErrorMessage name="username" component="div" />
             </div>
 
             <div>
-              <label htmlFor="password">Contraseña</label>
+              {/* Label para password -> 'placeholders.password' => "Password" */}
+              <label htmlFor="password">{t('placeholders.password')}</label>
               <Field id="password" name="password" type="password" />
               <ErrorMessage name="password" component="div" />
             </div>
 
             <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Enviando...' : 'Ingresar'}
+              {/* Si está enviando, muestra 'loading', de lo contrario 'entry' => "Log in" */}
+              {isSubmitting ? t('loading') : t('entry')}
             </button>
           </Form>
         )}
       </Formik>
 
-      {/* Enlace a /signup */}
       <p>
-        ¿Nuevo en el chat?
-        <Link to="/signup"> Registrarse</Link>
+        {/* "¿Nuevo en el chat?" -> 'noAccount' => "No account?" */}
+        {t('noAccount')}
+        {/* "Registrarse" -> 'makeRegistration' => "Sign up" */}
+        <Link to="/signup"> {t('makeRegistration')}</Link>
       </p>
     </div>
   );

@@ -1,12 +1,15 @@
 // frontend/src/components/SignupPage/SignupPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
 import { signup } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 
 function SignupPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { logIn } = useAuth(); // si tu AuthProvider maneja logIn(token, username)
+  const { logIn } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -16,43 +19,46 @@ function SignupPage() {
     e.preventDefault();
     setError(null);
 
-    // Validaciones front
+    // Validaciones en frontend
     if (username.length < 3 || username.length > 20) {
-      setError('El nombre de usuario debe tener entre 3 y 20 caracteres');
+      setError(t('regRules.name')); // "From 3 to 20 characters"
       return;
     }
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+      setError(t('regRules.password')); // "At least 6 characters"
       return;
     }
     if (password !== confirm) {
-      setError('Las contraseñas no coinciden');
+      setError(t('regRules.passwordEquality')); // "Passwords must match"
       return;
     }
 
     try {
-      // Llamamos a signup (POST /api/v1/signup)
       const { token, username: returnedUser } = await signup(username, password);
-      // Llamamos a logIn(token, returnedUser) para guardar ambos en AuthProvider
       logIn(token, returnedUser);
-      // Redirigimos al chat
       navigate('/');
     } catch (err) {
       if (err.response?.status === 409) {
-        setError('Ese usuario ya existe');
+        setError(t('errors.userExist')); // "This user already exists"
       } else {
-        setError('Error al registrarse');
+        setError(t('error')); // "Error" or "Error during registration"
       }
     }
   };
 
   return (
     <div>
-      <h2>Registro</h2>
+      {/* Título en español => t('registration') => "Registration" */}
+      <h2>{t('registration')}</h2>
+
+      {/* Mensaje de error */}
       {error && <div style={{ color: 'red' }}>{error}</div>}
+
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Nombre de usuario
+          {/* "Nombre de usuario" => t('placeholders.username') => "Username" */}
+          <label>
+            {t('placeholders.username')}
             <input
               type="text"
               value={username}
@@ -61,7 +67,9 @@ function SignupPage() {
           </label>
         </div>
         <div>
-          <label>Contraseña
+          {/* "Contraseña" => t('placeholders.password') => "Password" */}
+          <label>
+            {t('placeholders.password')}
             <input
               type="password"
               value={password}
@@ -70,7 +78,9 @@ function SignupPage() {
           </label>
         </div>
         <div>
-          <label>Confirmar contraseña
+          {/* "Confirmar contraseña" => t('placeholders.confirmPassword') => "Confirm password" */}
+          <label>
+            {t('placeholders.confirmPassword')}
             <input
               type="password"
               value={confirm}
@@ -78,10 +88,15 @@ function SignupPage() {
             />
           </label>
         </div>
-        <button type="submit">Registrarse</button>
+        {/* "Registrarse" => t('makeRegistration') => "Sign up" */}
+        <button type="submit">{t('makeRegistration')}</button>
       </form>
+
       <p>
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+        {/* "¿Ya tienes cuenta?" => Podríamos usar "Already have an account?" */}
+        {t('alreadyHaveAccount')}{' '}
+        {/* "Inicia sesión" => "entry" (o "Log in") */}
+        <Link to="/login">{t('entry')}</Link>
       </p>
     </div>
   );

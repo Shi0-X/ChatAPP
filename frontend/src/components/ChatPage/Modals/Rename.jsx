@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { renameChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
+import { useTranslation } from 'react-i18next';
 
 function Rename() {
   const dispatch = useDispatch();
@@ -11,6 +12,8 @@ function Rename() {
 
   const { items: channels } = useSelector((state) => state.channels);
   const { isOpen, type, channelId } = useSelector((state) => state.modal);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (type === 'renameChannel' && isOpen && inputRef.current) {
@@ -22,23 +25,22 @@ function Rename() {
     return null;
   }
 
-  // Canal actual (para mostrar su nombre o validaciones)
   const currentChannel = channels.find((ch) => ch.id === channelId);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newName.trim()) return;
-    // Validar que no se repita
+
     const alreadyExists = channels.some((ch) => ch.name === newName.trim());
     if (alreadyExists) {
-      alert('Ese nombre de canal ya existe.');
+      alert(t('modal.unique')); // "Must be unique"
       return;
     }
     try {
       await dispatch(renameChannel({ id: channelId, newName: newName.trim() })).unwrap();
       dispatch(closeModal());
     } catch (err) {
-      console.error('Error al renombrar canal:', err);
+      console.error(t('errors.channelRename'), err); // "Error renaming channel"
     }
   };
 
@@ -49,18 +51,23 @@ function Rename() {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>Renombrar canal</h2>
-        <p>Canal actual: {currentChannel?.name}</p>
+        {/* "Renombrar canal" => t('modal.renameChannel') => "Rename channel" */}
+        <h2>{t('modal.renameChannel')}</h2>
+        {/* "Canal actual" => Podrías usar algo como t('modal.toggle') */}
+        <p>{`${t('modal.toggle')}: ${currentChannel?.name}`}</p>
         <form onSubmit={handleSubmit}>
+          {/* placeholder="Nuevo nombre" => t('modal.channelName') */}
           <input
             ref={inputRef}
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Nuevo nombre"
+            placeholder={t('modal.channelName')}
           />
-          <button type="submit">Renombrar</button>
-          <button type="button" onClick={handleCancel}>Cancelar</button>
+          {/* "Renombrar" => t('modal.rename') => "Rename" */}
+          <button type="submit">{t('modal.rename')}</button>
+          {/* "Cancelar" => t('cancel') => "Cancel" */}
+          <button type="button" onClick={handleCancel}>{t('cancel')}</button>
         </form>
       </div>
     </div>
