@@ -4,11 +4,11 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { login as loginRequest } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginPage() {
   const [authError, setAuthError] = useState(null);
-  const { logIn } = useAuth(); // AuthProvider: guarda token en el context
+  const { logIn } = useAuth(); // AuthProvider: guarda token y username
   const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
@@ -25,9 +25,9 @@ function LoginPage() {
     try {
       setAuthError(null);
       // Llamamos a loginRequest (POST /login)
-      const { token } = await loginRequest(values.username, values.password);
-      // Guardamos el token en AuthProvider
-      logIn(token);
+      const { token, username: returnedUser } = await loginRequest(values.username, values.password);
+      // Guardamos token y username en AuthProvider
+      logIn(token, returnedUser);
       // Redirigimos a "/"
       navigate('/');
     } catch (error) {
@@ -67,6 +67,12 @@ function LoginPage() {
           </Form>
         )}
       </Formik>
+
+      {/* Enlace a /signup */}
+      <p>
+        ¿Nuevo en el chat?
+        <Link to="/signup"> Registrarse</Link>
+      </p>
     </div>
   );
 }

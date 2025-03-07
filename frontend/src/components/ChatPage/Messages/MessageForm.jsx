@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '../../../slices/thunks.js';
+import { useAuth } from '../../../contexts/AuthProvider.jsx';
 
 function MessageForm() {
   const dispatch = useDispatch();
@@ -9,27 +10,20 @@ function MessageForm() {
 
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
 
-  // Leemos el username desde localStorage
-  const username = localStorage.getItem('username') || 'anon';
+  // Leemos el username real desde AuthProvider
+  const { username } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('handleSubmit se ejecutó, text=', text);
-
-    if (!text.trim()) {
-      console.log('Texto vacío, no se emite nada');
-      return;
-    }
+    if (!text.trim()) return;
 
     const payload = {
       body: text,
       channelId: currentChannelId,
-      username, // leer la clave real
+      username: username || 'anon', // fallback si no hay username
     };
 
-    console.log('Enviando mensaje con addMessage:', payload);
     dispatch(addMessage(payload));
-
     setText('');
   };
 

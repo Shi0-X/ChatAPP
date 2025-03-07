@@ -7,6 +7,9 @@ import ChatPage from './components/ChatPage/ChatPage.jsx';
 import LoginPage from './components/LoginPage/LoginPage.jsx';
 import NotFoundPage from './components/Errors/NotFoundPage.jsx';
 
+// Nuevo: importamos SignupPage
+import SignupPage from './components/SignupPage/SignupPage.jsx';
+
 const apiPath = 'api/v1';
 
 export const appPaths = {
@@ -34,10 +37,8 @@ function AppRoutes() {
         {/* Ruta /login -> LoginPage */}
         <Route path={appPaths.login} element={<LoginPage />} />
 
-        {/* O si quisieras que la ruta / muestre App.jsx, haz:
-          <Route path="/" element={<App />} /> 
-          <Route path="/chat" element={<ChatPage />} /> 
-        */}
+        {/* NUEVA RUTA /signup -> SignupPage */}
+        <Route path={appPaths.signUp} element={<SignupPage />} />
 
         {/* Ruta 404 -> NotFoundPage */}
         <Route path={appPaths.notFound} element={<NotFoundPage />} />
