@@ -1,6 +1,7 @@
 const en = {
     translation: {
       name: 'Hexlet Chat',
+      messagesTitle: 'Messages',
       entry: 'Log in',
       exit: 'Log out',
       registration: 'Registration',
