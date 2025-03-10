@@ -1,6 +1,7 @@
 // frontend/src/components/ChatPage/Modals/Rename.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';          // Importar toast
 import { renameChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
 import { useTranslation } from 'react-i18next';
@@ -33,14 +34,18 @@ function Rename() {
 
     const alreadyExists = channels.some((ch) => ch.name === newName.trim());
     if (alreadyExists) {
-      alert(t('modal.unique')); // "Must be unique"
+      toast.error(t('modal.unique')); // "Must be unique"
       return;
     }
     try {
       await dispatch(renameChannel({ id: channelId, newName: newName.trim() })).unwrap();
+      // Éxito => toast success
+      toast.success(t('success.renameChannel')); // "Channel renamed"
       dispatch(closeModal());
     } catch (err) {
-      console.error(t('errors.channelRename'), err); // "Error renaming channel"
+      // Error => toast error
+      toast.error(t('errors.channelRename')); // "Error renaming channel"
+      console.error(t('errors.channelRename'), err);
     }
   };
 
@@ -51,12 +56,9 @@ function Rename() {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        {/* "Renombrar canal" => t('modal.renameChannel') => "Rename channel" */}
         <h2>{t('modal.renameChannel')}</h2>
-        {/* "Canal actual" => Podrías usar algo como t('modal.toggle') */}
         <p>{`${t('modal.toggle')}: ${currentChannel?.name}`}</p>
         <form onSubmit={handleSubmit}>
-          {/* placeholder="Nuevo nombre" => t('modal.channelName') */}
           <input
             ref={inputRef}
             type="text"
@@ -64,9 +66,7 @@ function Rename() {
             onChange={(e) => setNewName(e.target.value)}
             placeholder={t('modal.channelName')}
           />
-          {/* "Renombrar" => t('modal.rename') => "Rename" */}
           <button type="submit">{t('modal.rename')}</button>
-          {/* "Cancelar" => t('cancel') => "Cancel" */}
           <button type="button" onClick={handleCancel}>{t('cancel')}</button>
         </form>
       </div>

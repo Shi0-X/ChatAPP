@@ -1,6 +1,7 @@
 // frontend/src/components/ChatPage/Modals/Add.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';          // 1) Importar toast
 import { addChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
 import { useTranslation } from 'react-i18next';
@@ -27,14 +28,19 @@ function Add() {
 
     const alreadyExists = channels.some((ch) => ch.name === channelName.trim());
     if (alreadyExists) {
-      alert(t('modal.unique')); // "Must be unique"
+      // En lugar de alert, podrías usar un toast de error
+      toast.error(t('modal.unique')); // "Must be unique"
       return;
     }
     try {
       await dispatch(addChannel({ name: channelName.trim() })).unwrap();
+      // 2) Si se crea con éxito, toast de éxito
+      toast.success(t('success.newChannel')); // "Channel created"
       dispatch(closeModal());
     } catch (err) {
-      console.error(t('errors.channelAdd'), err); // "Error adding channel"
+      // 3) Si falla, toast de error
+      toast.error(t('errors.channelAdd')); // "Error adding channel"
+      console.error(t('errors.channelAdd'), err);
     }
   };
 
@@ -49,10 +55,8 @@ function Add() {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        {/* "Añadir Canal" => t('modal.add') => "Add channel" */}
         <h2>{t('modal.add')}</h2>
         <form onSubmit={handleSubmit}>
-          {/* placeholder="Nombre del canal" => t('modal.channelName') => "Channel name" */}
           <input
             ref={inputRef}
             type="text"
@@ -60,9 +64,7 @@ function Add() {
             onChange={(e) => setChannelName(e.target.value)}
             placeholder={t('modal.channelName')}
           />
-          {/* "Crear" => t('send') / "Create"? Podrías usar "send" o algo distinto */}
           <button type="submit">{t('send')}</button>
-          {/* "Cancelar" => t('cancel') => "Cancel" */}
           <button type="button" onClick={handleCancel}>{t('cancel')}</button>
         </form>
       </div>

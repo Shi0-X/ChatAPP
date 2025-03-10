@@ -1,40 +1,53 @@
 // frontend/src/init.jsx
 import React from 'react';
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
-import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import i18n from 'i18next';
+
+import { Provider as RollbarProvider, ErrorBoundary as RollbarErrorBoundary } from '@rollbar/react';
 
 import store from './slices/index.js';
 import AuthProvider from './contexts/AuthProvider.jsx';
 import SocketProvider from './contexts/SocketProvider.jsx';
-import AppRoutes from './routes.js';
-import resources from './locales/index.js'; // Importamos el objeto { en } desde locales/index.js
+import resources from './locales/index.js';
+import App from './components/App.jsx';
+
+// 1) Configuración de Rollbar
+const rollbarConfig = {
+  accessToken: '48593c211cdc43cf925df784e3768c13', // Tu token post_client_item
+  environment: 'production',   // o "development" según tu caso
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+};
 
 export default async function init() {
-  // Inicializamos i18n
+  // 2) Inicializamos i18n
   i18n
     .use(initReactI18next)
     .init({
-      lng: 'en',         // Idioma por defecto
-      fallbackLng: 'en', // Si no encuentra traducciones en 'en', vuelve a 'en'
-      debug: false,      // ponlo en true si deseas ver logs de i18n en consola
-      resources,         // { en: {...} }
+      lng: 'en',
+      fallbackLng: 'en',
+      debug: false,
+      resources,
     });
 
-  // Retornamos el VDOM final envuelto en I18nextProvider
+  // 3) Retornamos el VDOM final envuelto en RollbarProvider + ErrorBoundary
   return (
     <React.StrictMode>
-      <Provider store={store}>
+      <ReduxProvider store={store}>
         <I18nextProvider i18n={i18n}>
-          <AuthProvider>
-            <SocketProvider>
-              <AppRoutes />
-            </SocketProvider>
-          </AuthProvider>
+          <RollbarProvider config={rollbarConfig}>
+            <RollbarErrorBoundary>
+              <AuthProvider>
+                <SocketProvider>
+                  <App />
+                </SocketProvider>
+              </AuthProvider>
+            </RollbarErrorBoundary>
+          </RollbarProvider>
         </I18nextProvider>
-      </Provider>
+      </ReduxProvider>
     </React.StrictMode>
   );
 }
-

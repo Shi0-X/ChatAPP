@@ -1,14 +1,23 @@
-// src/components/App.jsx
+// frontend/src/components/App.jsx
 import React from 'react';
 import '../App.css';
-import ChatNavbar from './Navbar/ChatNavbar.jsx'; // Nuevo
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from '../routes.js';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <div className="App">
-      <ChatNavbar />
-      <h1>Hexlet Chat (App container)</h1>
-      <p>Aquí podrías colocar rutas u otros componentes.</p>
+      {/* Envolvemos las rutas con BrowserRouter */}
+      <BrowserRouter>
+        {/* Quitamos ChatNavbar para que no aparezca en login/signup */}
+        <ToastContainer />
+
+        {/* Tus rutas definidas en routes.js */}
+        <AppRoutes />
+      </BrowserRouter>
     </div>
   );
 }

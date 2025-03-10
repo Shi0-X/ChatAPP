@@ -15,7 +15,7 @@ import Add from './Modals/Add.jsx';
 import Remove from './Modals/Remove.jsx';
 import Rename from './Modals/Rename.jsx';
 
-// IMPORTAR ChatNavbar
+// Importamos ChatNavbar aquí
 import ChatNavbar from '../Navbar/ChatNavbar.jsx';
 
 function ChatPage() {
@@ -64,16 +64,18 @@ function ChatPage() {
 
   return (
     <>
-      {/* Navbar con "Chat" y "Log out" */}
+      {/* Navbar arriba, para usuarios logueados */}
       <ChatNavbar />
 
+      {/* Estructura principal */}
       <div style={{ display: 'flex', height: '100vh' }}>
-        <div style={{
-          width: '250px',
-          borderRight: '1px solid #ccc',
-          padding: '1rem',
-          overflowY: 'auto',
-        }}
+        <div
+          style={{
+            width: '250px',
+            borderRight: '1px solid #ccc',
+            padding: '1rem',
+            overflowY: 'auto',
+          }}
         >
           <ChannelsBox />
         </div>

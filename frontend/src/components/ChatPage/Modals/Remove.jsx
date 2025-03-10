@@ -1,6 +1,7 @@
 // frontend/src/components/ChatPage/Modals/Remove.jsx
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';          // Importar toast
 import { removeChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
 import { useTranslation } from 'react-i18next';
@@ -17,9 +18,13 @@ function Remove() {
   const handleConfirm = async () => {
     try {
       await dispatch(removeChannel({ id: channelId })).unwrap();
+      // Éxito => toast success
+      toast.success(t('success.removeChannel')); // "Channel removed"
       dispatch(closeModal());
     } catch (err) {
-      console.error(t('errors.channelRemove'), err); // "Error removing channel"
+      // Error => toast error
+      toast.error(t('errors.channelRemove')); // "Error removing channel"
+      console.error(t('errors.channelRemove'), err);
     }
   };
 
@@ -30,13 +35,9 @@ function Remove() {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        {/* "¿Eliminar canal?" => t('modal.removeChannel') => "Remove channel" */}
         <h2>{t('modal.removeChannel')}</h2>
-        {/* "Esta acción no se puede deshacer." => t('modal.confirm') => "Are you sure?" */}
         <p>{t('modal.confirm')}</p>
-        {/* "Confirmar" => t('send') o "Yes"? */}
         <button type="button" onClick={handleConfirm}>{t('send')}</button>
-        {/* "Cancelar" => t('cancel') */}
         <button type="button" onClick={handleCancel}>{t('cancel')}</button>
       </div>
     </div>

@@ -1,18 +1,23 @@
 // frontend/src/slices/thunks.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify'; // Importar
+import i18n from 'i18next'; // Para usar i18n.t() en un thunk sin hooks
 import fetchData from '../chatApi/fetchData.js';
 import api from '../chatApi/api.js';
 
-// Carga inicial: { channels, messages }
 export const fetchInitialData = createAsyncThunk(
   'data/fetchInitialData',
   async () => {
-    // GET /channels y /messages
-    const data = await fetchData();
-    return data; // => { channels, messages, currentChannelId? }
+    try {
+      const data = await fetchData();
+      return data;
+    } catch (err) {
+      // Notificar error de carga
+      toast.error(i18n.t('errors.network')); // "Connection error"
+      throw err;
+    }
   }
 );
-
 // Crear mensaje
 export const addMessage = createAsyncThunk(
   'messages/addMessage',
