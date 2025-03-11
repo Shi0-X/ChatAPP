@@ -1,12 +1,12 @@
 // frontend/src/components/ChatPage/Modals/Rename.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';          // Importar toast
+import { toast } from 'react-toastify'; // Importar toast
+import { useTranslation } from 'react-i18next';
 import { renameChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
-import { useTranslation } from 'react-i18next';
 
-function Rename() {
+const Rename = () => {
   const dispatch = useDispatch();
   const [newName, setNewName] = useState('');
   const inputRef = useRef(null);
@@ -72,6 +72,6 @@ function Rename() {
       </div>
     </div>
   );
-}
+};
 
 export default Rename;

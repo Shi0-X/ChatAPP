@@ -1,11 +1,13 @@
 // src/contexts/AuthProvider.jsx
-import React, { useState, useContext, createContext, useEffect } from 'react';
+import React, {
+  useState, useContext, createContext, useEffect, useMemo,
+} from 'react';
 
 const AuthContext = createContext({});
 
 export const useAuth = () => useContext(AuthContext);
 
-function AuthProvider({ children }) {
+const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [username, setUsername] = useState(null);
 
@@ -20,7 +22,6 @@ function AuthProvider({ children }) {
     }
   }, []);
 
-  // logIn recibe token y username
   const logIn = (newToken, newUsername) => {
     setToken(newToken);
     setUsername(newUsername);
@@ -37,19 +38,20 @@ function AuthProvider({ children }) {
 
   const isAuthenticated = Boolean(token);
 
-  const value = {
+  // Memoizamos el objeto para no recrearlo en cada render
+  const value = useMemo(() => ({
     token,
     username,
     isAuthenticated,
     logIn,
     logOut,
-  };
+  }), [token, username, isAuthenticated]);
 
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export default AuthProvider;

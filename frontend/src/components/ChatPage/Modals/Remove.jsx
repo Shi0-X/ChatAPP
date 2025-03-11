@@ -1,12 +1,12 @@
 // frontend/src/components/ChatPage/Modals/Remove.jsx
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';          // Importar toast
+import { toast } from 'react-toastify'; // Importar toast
+import { useTranslation } from 'react-i18next';
 import { removeChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
-import { useTranslation } from 'react-i18next';
 
-function Remove() {
+const Remove = () => {
   const dispatch = useDispatch();
   const { isOpen, type, channelId } = useSelector((state) => state.modal);
   const { t } = useTranslation();
@@ -42,6 +42,6 @@ function Remove() {
       </div>
     </div>
   );
-}
+};
 
 export default Remove;

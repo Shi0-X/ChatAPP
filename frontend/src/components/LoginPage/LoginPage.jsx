@@ -1,6 +1,7 @@
-// frontend/src/components/LoginPage/LoginPage.jsx
 import React, { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import {
+  Formik, Form, Field, ErrorMessage,
+} from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { login as loginRequest } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 
-function LoginPage() {
+const LoginPage = () => {
   const { t } = useTranslation();
   const [authError, setAuthError] = useState(null);
   const { logIn } = useAuth();
@@ -27,7 +28,11 @@ function LoginPage() {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setAuthError(null);
-      const { token, username: returnedUser } = await loginRequest(values.username, values.password);
+      const {
+        token,
+        username: returnedUser,
+      } = await loginRequest(values.username, values.password);
+
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
@@ -71,10 +76,13 @@ function LoginPage() {
 
       <p>
         {t('noAccount')}
-        <Link to="/signup"> {t('makeRegistration')}</Link>
+        {' '}
+        <Link to="/signup">
+          {t('makeRegistration')}
+        </Link>
       </p>
     </div>
   );
-}
+};
 
 export default LoginPage;

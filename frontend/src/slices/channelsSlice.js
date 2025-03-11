@@ -1,4 +1,4 @@
-// slices/channelsSlice.js
+// frontend/src/slices/channelsSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import {
   fetchInitialData,
@@ -8,69 +8,80 @@ import {
 } from './thunks.js';
 
 const initialState = {
-  items: [], // array de canales
-  currentChannelId: null, // canal actual
+  items: [],
+  currentChannelId: null,
 };
 
 const channelsSlice = createSlice({
   name: 'channels',
   initialState,
   reducers: {
-    setCurrentChannelId: (state, action) => {
-      state.currentChannelId = action.payload;
-    },
+    setCurrentChannelId: (oldState, action) => ({
+      ...oldState,
+      currentChannelId: action.payload,
+    }),
   },
   extraReducers: (builder) => {
     builder
-      // Al cargar canales y mensajes
-      .addCase(fetchInitialData.fulfilled, (state, action) => {
+      .addCase(fetchInitialData.fulfilled, (oldState, action) => {
         const { channels, currentChannelId } = action.payload;
-        state.items = channels;
+        const newState = {
+          ...oldState,
+          items: channels,
+        };
 
         if (currentChannelId) {
-          state.currentChannelId = currentChannelId;
+          newState.currentChannelId = currentChannelId;
         } else {
-          // busca 'general'
-          const generalChannel = state.items.find((ch) => ch.name === 'general');
+          const generalChannel = channels.find((ch) => ch.name === 'general');
           if (generalChannel) {
-            state.currentChannelId = generalChannel.id;
+            newState.currentChannelId = generalChannel.id;
           }
         }
+        return newState;
       })
 
-      // Al crear un canal
-      .addCase(addChannel.fulfilled, (state, action) => {
-        const newChannel = action.payload; // { id, name, removable: true, ... }
-        state.items.push(newChannel);
-        // Mover al usuario al nuevo canal
-        state.currentChannelId = newChannel.id;
+      .addCase(addChannel.fulfilled, (oldState, action) => {
+        const newChannel = action.payload;
+        return {
+          ...oldState,
+          items: [...oldState.items, newChannel],
+          currentChannelId: newChannel.id,
+        };
       })
 
-      // Al eliminar un canal
-      .addCase(removeChannel.fulfilled, (state, action) => {
-        const { id: removedId } = action.payload; // { id: <canalEliminado> }
-        // Filtrar el canal
-        state.items = state.items.filter((ch) => ch.id !== removedId);
+      .addCase(removeChannel.fulfilled, (oldState, action) => {
+        const { id: removedId } = action.payload;
+        const filtered = oldState.items.filter((ch) => ch.id !== removedId);
 
-        // Si era el canal actual, mover a 'general'
-        if (state.currentChannelId === removedId) {
-          const generalChannel = state.items.find((ch) => ch.name === 'general');
-          if (generalChannel) {
-            state.currentChannelId = generalChannel.id;
-          } else {
-            // fallback
-            state.currentChannelId = null;
-          }
+        let newCurrentChannelId = oldState.currentChannelId;
+        if (oldState.currentChannelId === removedId) {
+          const generalChannel = filtered.find((ch) => ch.name === 'general');
+          newCurrentChannelId = generalChannel ? generalChannel.id : null;
         }
+
+        return {
+          ...oldState,
+          items: filtered,
+          currentChannelId: newCurrentChannelId,
+        };
       })
 
-      // Al renombrar un canal
-      .addCase(renameChannel.fulfilled, (state, action) => {
+      .addCase(renameChannel.fulfilled, (oldState, action) => {
         const updated = action.payload; // { id, name, ... }
-        const channelIndex = state.items.findIndex((ch) => ch.id === updated.id);
-        if (channelIndex !== -1) {
-          state.items[channelIndex].name = updated.name;
+        const channelIndex = oldState.items.findIndex((ch) => ch.id === updated.id);
+        if (channelIndex === -1) {
+          return oldState;
         }
+        const newItems = [...oldState.items];
+        newItems[channelIndex] = {
+          ...newItems[channelIndex],
+          name: updated.name,
+        };
+        return {
+          ...oldState,
+          items: newItems,
+        };
       });
   },
 });

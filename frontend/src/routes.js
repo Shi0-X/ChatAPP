@@ -24,15 +24,13 @@ export const apiRoutes = {
 };
 
 // Componente principal de rutas
-function AppRoutes() {
-  return (
-    <Routes>
-      <Route path={appPaths.chat} element={<ChatPage />} />
-      <Route path={appPaths.login} element={<LoginPage />} />
-      <Route path={appPaths.signUp} element={<SignupPage />} />
-      <Route path={appPaths.notFound} element={<NotFoundPage />} />
-    </Routes>
-  );
-}
+const AppRoutes = () => (
+  <Routes>
+    <Route path={appPaths.chat} element={<ChatPage />} />
+    <Route path={appPaths.login} element={<LoginPage />} />
+    <Route path={appPaths.signUp} element={<SignupPage />} />
+    <Route path={appPaths.notFound} element={<NotFoundPage />} />
+  </Routes>
+);
 
 export default AppRoutes;

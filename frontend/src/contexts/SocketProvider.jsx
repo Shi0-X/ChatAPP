@@ -6,7 +6,7 @@ const SocketContext = createContext(null);
 
 export const useSocket = () => useContext(SocketContext);
 
-function SocketProvider({ children }) {
+const SocketProvider = ({ children }) => {
   // Detecta si el navegador está apuntando a localhost o no
   const isLocalhost = window.location.hostname === 'localhost';
 
@@ -23,6 +23,6 @@ function SocketProvider({ children }) {
       {children}
     </SocketContext.Provider>
   );
-}
+};
 
 export default SocketProvider;

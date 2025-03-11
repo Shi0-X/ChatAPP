@@ -10,17 +10,16 @@ const messagesSlice = createSlice({
   name: 'messages',
   initialState,
   reducers: {
-    // Acción sincrónica: se usa cuando llega un 'newMessage' por socket
-    messageReceived: (state, action) => {
-      state.items.push(action.payload);
-    },
+    messageReceived: (oldState, action) => ({
+      ...oldState,
+      items: [...oldState.items, action.payload],
+    }),
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchInitialData.fulfilled, (state, action) => {
-        // action.payload.messages es un array
-        state.items = action.payload.messages;
-      });
+    builder.addCase(fetchInitialData.fulfilled, (oldState, action) => ({
+      ...oldState,
+      items: action.payload.messages,
+    }));
   },
 });
 

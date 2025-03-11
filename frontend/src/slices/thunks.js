@@ -16,7 +16,7 @@ export const fetchInitialData = createAsyncThunk(
       toast.error(i18n.t('errors.network')); // "Connection error"
       throw err;
     }
-  }
+  },
 );
 // Crear mensaje
 export const addMessage = createAsyncThunk(
@@ -29,7 +29,7 @@ export const addMessage = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
 
 // ================== NUEVOS THUNKS PARA CANALES ================== //
@@ -47,7 +47,7 @@ export const addChannel = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
 
 // Eliminar canal
@@ -62,7 +62,7 @@ export const removeChannel = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
 
 // Renombrar canal
@@ -78,5 +78,5 @@ export const renameChannel = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );

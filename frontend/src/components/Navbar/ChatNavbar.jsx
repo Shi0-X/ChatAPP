@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 
-function ChatNavbar() {
+const ChatNavbar = () => {
   const { isAuthenticated, logOut } = useAuth();
 
   const handleLogout = () => {
@@ -22,6 +22,6 @@ function ChatNavbar() {
       )}
     </nav>
   );
-}
+};
 
 export default ChatNavbar;

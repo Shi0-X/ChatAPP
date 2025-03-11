@@ -1,14 +1,14 @@
 // frontend/src/components/ChatPage/Messages/MessageForm.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import leoProfanity from 'leo-profanity';
 import { useAuth } from '../../../contexts/AuthProvider.jsx';
 import { addMessage } from '../../../slices/thunks.js';
-import { useTranslation } from 'react-i18next';
 
 // 1) Importar leo-profanity
-import leoProfanity from 'leo-profanity';
 
-function MessageForm() {
+const MessageForm = () => {
   const dispatch = useDispatch();
   const [text, setText] = useState('');
   const { username } = useAuth();
@@ -50,6 +50,6 @@ function MessageForm() {
       </form>
     </div>
   );
-}
+};
 
 export default MessageForm;

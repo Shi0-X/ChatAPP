@@ -4,7 +4,7 @@ import axios from 'axios';
 const getToken = () => localStorage.getItem('token') || null;
 
 const api = axios.create({
-  baseURL: '/api/v1', 
+  baseURL: '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -12,12 +12,17 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
+  (cfg) => {
+    // Creamos una copia para no mutar 'cfg'
+    const newCfg = { ...cfg };
     const token = getToken();
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      newCfg.headers = {
+        ...newCfg.headers,
+        Authorization: `Bearer ${token}`,
+      };
     }
-    return config;
+    return newCfg;
   },
   (error) => Promise.reject(error),
 );
@@ -31,7 +36,7 @@ api.interceptors.response.use(
       window.location.href = '/login';
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // ----- FUNCIONES DE LOGIN, GET CHANNELS, GET MESSAGES ----- //
@@ -60,14 +65,9 @@ export const login = async (username, password) => {
 };
 
 export const signup = async (username, password) => {
-  try {
-    // POST /api/v1/signup
-    const response = await api.post('/signup', { username, password });
-    // El servidor responde { token, username: '...' }
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  // Eliminamos el try/catch si solo relanzamos el mismo error
+  const response = await api.post('/signup', { username, password });
+  return response.data;
 };
 
 export const getChannels = async () => {

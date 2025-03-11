@@ -1,12 +1,12 @@
 // frontend/src/components/ChatPage/Modals/Add.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';          // 1) Importar toast
+import { toast } from 'react-toastify'; // 1) Importar toast
+import { useTranslation } from 'react-i18next';
 import { addChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
-import { useTranslation } from 'react-i18next';
 
-function Add() {
+const Add = () => {
   const dispatch = useDispatch();
   const [channelName, setChannelName] = useState('');
   const inputRef = useRef(null);
@@ -70,6 +70,6 @@ function Add() {
       </div>
     </div>
   );
-}
+};
 
 export default Add;

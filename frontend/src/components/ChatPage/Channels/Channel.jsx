@@ -1,12 +1,10 @@
 // frontend/src/components/ChatPage/Channels/Channel.jsx
 import React from 'react';
 
-function Channel({ channel }) {
-  return (
-    <li>
-      {channel.name}
-    </li>
-  );
-}
+const Channel = ({ channel }) => (
+  <li>
+    {channel.name}
+  </li>
+);
 
 export default Channel;

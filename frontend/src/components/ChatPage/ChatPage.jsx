@@ -1,39 +1,39 @@
-// frontend/src/components/ChatPage/ChatPage.jsx
 import React, { useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthProvider.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useAuth } from '../../contexts/AuthProvider.jsx';
 import { fetchInitialData } from '../../slices/thunks.js';
 import { useSocket } from '../../contexts/SocketProvider.jsx';
 import { messageReceived } from '../../slices/messagesSlice.js';
 import ChannelsBox from './Channels/ChannelsBox.jsx';
 import MessagesBox from './Messages/MessagesBox.jsx';
 import MessageForm from './Messages/MessageForm.jsx';
-
-// Modales
 import Add from './Modals/Add.jsx';
 import Remove from './Modals/Remove.jsx';
 import Rename from './Modals/Rename.jsx';
-
-// Importamos ChatNavbar aquí
 import ChatNavbar from '../Navbar/ChatNavbar.jsx';
 
-function ChatPage() {
+const ChatPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useSocket();
 
+  // Verificación de autenticación
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
-      return;
+    } else {
+      dispatch(fetchInitialData());
     }
-    dispatch(fetchInitialData());
   }, [isAuthenticated, navigate, dispatch]);
 
+  // Manejo de socket
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      // Retorna algo (aunque sea 'undefined') para evitar inconsistencia
+      return undefined;
+    }
 
     const handleNewMessage = (payload) => {
       dispatch(messageReceived(payload));
@@ -54,6 +54,7 @@ function ChatPage() {
     socket.on('removeChannel', handleRemoveChannel);
     socket.on('renameChannel', handleRenameChannel);
 
+    // Retornamos la limpieza
     return () => {
       socket.off('newMessage', handleNewMessage);
       socket.off('newChannel', handleNewChannel);
@@ -64,10 +65,7 @@ function ChatPage() {
 
   return (
     <>
-      {/* Navbar arriba, para usuarios logueados */}
       <ChatNavbar />
-
-      {/* Estructura principal */}
       <div style={{ display: 'flex', height: '100vh' }}>
         <div
           style={{
@@ -83,14 +81,12 @@ function ChatPage() {
           <MessagesBox />
           <MessageForm />
         </div>
-
-        {/* Modales */}
         <Add />
         <Remove />
         <Rename />
       </div>
     </>
   );
-}
+};
 
 export default ChatPage;

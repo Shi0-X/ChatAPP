@@ -1,8 +1,8 @@
 // frontend/src/init.jsx
 import React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { I18nextProvider } from 'react-i18next';
-import { initReactI18next } from 'react-i18next';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
+
 import i18n from 'i18next';
 
 import { Provider as RollbarProvider, ErrorBoundary as RollbarErrorBoundary } from '@rollbar/react';
@@ -16,7 +16,7 @@ import App from './components/App.jsx';
 // 1) Configuración de Rollbar
 const rollbarConfig = {
   accessToken: '48593c211cdc43cf925df784e3768c13', // Tu token post_client_item
-  environment: 'production',   // o "development" según tu caso
+  environment: 'production', // o "development" según tu caso
   captureUncaught: true,
   captureUnhandledRejections: true,
 };

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { signup } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 
-function SignupPage() {
+const SignupPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { logIn } = useAuth();
@@ -19,17 +19,16 @@ function SignupPage() {
     e.preventDefault();
     setError(null);
 
-    // Validaciones en frontend
     if (username.length < 3 || username.length > 20) {
-      setError(t('regRules.name')); // "From 3 to 20 characters"
+      setError(t('regRules.name'));
       return;
     }
     if (password.length < 6) {
-      setError(t('regRules.password')); // "At least 6 characters"
+      setError(t('regRules.password'));
       return;
     }
     if (password !== confirm) {
-      setError(t('regRules.passwordEquality')); // "Passwords must match"
+      setError(t('regRules.passwordEquality'));
       return;
     }
 
@@ -39,67 +38,66 @@ function SignupPage() {
       navigate('/');
     } catch (err) {
       if (err.response?.status === 409) {
-        setError(t('errors.userExist')); // "This user already exists"
+        setError(t('errors.userExist'));
       } else {
-        setError(t('error')); // "Error" or "Error during registration"
+        setError(t('error'));
       }
     }
   };
 
   return (
     <div>
-      {/* Título en español => t('registration') => "Registration" */}
       <h2>{t('registration')}</h2>
-
-      {/* Mensaje de error */}
       {error && <div style={{ color: 'red' }}>{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div>
-          {/* "Nombre de usuario" => t('placeholders.username') => "Username" */}
-          <label>
+          <label htmlFor="usernameInput">
             {t('placeholders.username')}
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
           </label>
+          <input
+            id="usernameInput"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </div>
         <div>
-          {/* "Contraseña" => t('placeholders.password') => "Password" */}
-          <label>
+          <label htmlFor="passwordInput">
             {t('placeholders.password')}
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
           </label>
+          <input
+            id="passwordInput"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
         <div>
-          {/* "Confirmar contraseña" => t('placeholders.confirmPassword') => "Confirm password" */}
-          <label>
+          <label htmlFor="confirmPasswordInput">
             {t('placeholders.confirmPassword')}
-            <input
-              type="password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-            />
           </label>
+          <input
+            id="confirmPasswordInput"
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+          />
         </div>
-        {/* "Registrarse" => t('makeRegistration') => "Sign up" */}
-        <button type="submit">{t('makeRegistration')}</button>
+        <button type="submit">
+          {t('makeRegistration')}
+        </button>
       </form>
 
       <p>
-        {/* "¿Ya tienes cuenta?" => Podríamos usar "Already have an account?" */}
-        {t('alreadyHaveAccount')}{' '}
-        {/* "Inicia sesión" => "entry" (o "Log in") */}
-        <Link to="/login">{t('entry')}</Link>
+        {t('alreadyHaveAccount')}
+        {' '}
+        <Link to="/login">
+          {t('entry')}
+        </Link>
       </p>
     </div>
   );
-}
+};
 
 export default SignupPage;

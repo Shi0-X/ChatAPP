@@ -3,25 +3,29 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   isOpen: false,
-  type: null,        // 'addChannel', 'removeChannel', 'renameChannel'
-  channelId: null,   // id del canal involucrado
+  type: null,
+  channelId: null,
 };
 
 const modalSlice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    openModal: (state, action) => {
+    openModal: (oldState, action) => {
       const { type, channelId = null } = action.payload;
-      state.isOpen = true;
-      state.type = type;
-      state.channelId = channelId;
+      return {
+        ...oldState,
+        isOpen: true,
+        type,
+        channelId,
+      };
     },
-    closeModal: (state) => {
-      state.isOpen = false;
-      state.type = null;
-      state.channelId = null;
-    },
+    closeModal: (oldState) => ({
+      ...oldState,
+      isOpen: false,
+      type: null,
+      channelId: null,
+    }),
   },
 });
 
