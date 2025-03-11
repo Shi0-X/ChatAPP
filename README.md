@@ -76,4 +76,4 @@ npx start-server --port 5001 --static ./frontend/build
 Abre http://localhost:5001 en tu navegador.
 ```
 La aplicación React (modo producción) se servirá en ese puerto.
-Las peticiones de login, canales, etc. se harán al mismo puerto 5001 (/api/v1/...).
+Las peticiones de login, canales, etc. se harán al mismo puerto 5001 (/api/v1/...). 
