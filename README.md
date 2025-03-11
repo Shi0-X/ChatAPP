@@ -1,5 +1,5 @@
 ### Hexlet tests and linter status:
-[![Actions Status](https://github.com/Shi0-X/fullstack-javascript-project-139/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Shi0-X/fullstack-javascript-project-139/actions)
+[![Actions Status](https://github.com/Shi0-X/fullstack-javascript-project-139/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Shi0-X/fullstack-javascript-project-139/actions) <a href="https://codeclimate.com/github/Shi0-X/ChatAPP/maintainability"><img src="https://api.codeclimate.com/v1/badges/2a21a3246eab2f086bda/maintainability" /></a>
 
 # ChatAPP
 
