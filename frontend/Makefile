@@ -1,15 +1,15 @@
 install:
-    npm ci
+	npm ci
 
 start:
-    npm run start
+	npm run start
 
 build:
-    rm build -rf
-    npm run build
+	rm -rf build
+	npm run build
 
 lint:
-    npx eslint .
+	npx eslint .
 
 start-frontend:
-    npm run dev
+	npm run dev
