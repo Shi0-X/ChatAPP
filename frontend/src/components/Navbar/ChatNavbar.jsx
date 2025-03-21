@@ -13,7 +13,7 @@ const ChatNavbar = () => {
   return (
     <nav style={{ background: '#eee', padding: '0.5rem' }}>
       <Link to="/" style={{ marginRight: '1rem' }}>
-        Chat
+        Hexlet Chat
       </Link>
       {isAuthenticated && (
         <button type="button" onClick={handleLogout}>
