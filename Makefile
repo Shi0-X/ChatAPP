@@ -6,7 +6,7 @@ install:
 	cd frontend && npm ci
 
 start-backend:
-	npx start-server -s ./frontend/dist -p 5001
+	npx start-server -s ./dist -p 5001
 
 start-frontend:
 	make -C frontend start-frontend
