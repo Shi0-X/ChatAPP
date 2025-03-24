@@ -5,7 +5,7 @@ start:
 	npm run start
 
 build:
-	rm -rf dist
+	node -e "require('fs').rmSync('dist', { recursive: true, force: true })"
 	npm run build
 
 lint:
