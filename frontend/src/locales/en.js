@@ -1,77 +1,108 @@
-const en = {
-  translation: {
-    name: 'Hexlet Chat',
-    messagesTitle: 'Messages',
-    entry: 'Log in',
-    exit: 'Log out',
-    registration: 'Registration',
-    makeRegistration: 'Sign up',
-    noAccount: 'No account?',
-    invalidFeedback: 'Invalid username or password',
-    pageNotFound: 'Page not found',
-    redirect: 'But you can go ',
-    mainPage: 'to the main page',
-    channelsTitle: 'Channels',
-    newMessage: 'New message',
-    messageBody: 'Message cannot be empty',
-    send: 'Send',
-    cancel: 'Cancel',
-    loading: 'Loading...',
-    error: 'Error',
-    update: 'Update',
-    reauthorization: 'Re-authenticate',
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Formik, Form, Field, ErrorMessage,
+} from 'formik';
+import * as Yup from 'yup';
+import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-    regRules: {
-      name: 'Must be from 3 to 20 characters',
-      password: 'Must be > 6 characters',
-      passwordEquality: 'Passwords must match',
-    },
+import { login as loginRequest } from '../../chatApi/api.js';
+import { useAuth } from '../../contexts/AuthProvider.jsx';
 
-    placeholders: {
-      login: 'Your nickname',
-      username: 'Username',
-      password: 'Password',
-      confirmPassword: 'Confirm password',
-      newMessage: 'Enter a message...',
-    },
+const LoginPage = () => {
+  const { t } = useTranslation();
+  const [authFailed, setAuthFailed] = useState(false);
+  const { logIn } = useAuth();
+  const navigate = useNavigate();
+  const usernameRef = useRef(null);
 
-    messagesCounter: {
-      messages_zero: 'No messages',
-      messages_one: '{{count}} message',
-      messages_few: '{{count}} messages',
-      messages_many: '{{count}} messages',
-    },
+  useEffect(() => {
+    if (usernameRef.current) {
+      usernameRef.current.focus();
+    }
+  }, []);
 
-    modal: {
-      add: 'Add channel',
-      toggle: 'Channel management',
-      rename: 'Rename',
-      renameChannel: 'Rename channel',
-      remove: 'Remove',
-      removeChannel: 'Remove channel',
-      channelName: 'Channel name',
-      confirm: 'Are you sure?',
-      unique: 'Must be unique',
-      lengthParams: 'From 3 to 20 characters',
-    },
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().required(t('errors.required')),
+    password: Yup.string().required(t('errors.required')),
+  });
 
-    success: {
-      newChannel: 'Channel created',
-      removeChannel: 'Channel removed',
-      renameChannel: 'Channel renamed',
-    },
+  const initialValues = {
+    username: '',
+    password: '',
+  };
 
-    errors: {
-      invalidFeedback: 'Username or password are incorrect',
-      userExist: 'This user already exists',
-      required: 'Required field',
-      network: 'Connection error',
-      message: 'Error adding message',
-      channelAdd: 'Error adding channel',
-      channelRemove: 'Error removing channel',
-      channelRename: 'Error renaming channel',
-    },
-  },
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      setAuthFailed(false);
+      const {
+        token,
+        username: returnedUser,
+      } = await loginRequest(values.username, values.password);
+
+      logIn(token, returnedUser);
+      navigate('/');
+    } catch (error) {
+      setAuthFailed(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2>{t('entry')}</h2>
+
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <div>
+              <label htmlFor="username">{t('placeholders.login')}</label>
+              <Field
+                id="username"
+                name="username"
+                type="text"
+                innerRef={usernameRef}
+              />
+              <ErrorMessage name="username" component="div" />
+            </div>
+
+            <div>
+              <label htmlFor="password">{t('placeholders.password')}</label>
+              <Field
+                id="password"
+                name="password"
+                type="password"
+              />
+              <ErrorMessage name="password" component="div" />
+            </div>
+
+            {authFailed && (
+              <div role="alert" style={{ color: 'red' }}>
+                {t('errors.invalidFeedback')}
+              </div>
+            )}
+
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? t('loading') : t('entry')}
+            </button>
+          </Form>
+        )}
+      </Formik>
+
+      <p>
+        {t('noAccount')}
+        {' '}
+        <Link to="/signup">
+          {t('makeRegistration')}
+        </Link>
+      </p>
+    </div>
+  );
 };
 
-export default en;
+export default LoginPage;
