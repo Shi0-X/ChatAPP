@@ -1,3 +1,4 @@
+// frontend/src/components/LoginPage/LoginPage.jsx
 import React, { useState } from 'react';
 import {
   Formik, Form, Field, ErrorMessage,
@@ -5,14 +6,13 @@ import {
 import * as Yup from 'yup';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Form as BootstrapForm } from 'react-bootstrap';
 
 import { login as loginRequest } from '../../chatApi/api.js';
 import { useAuth } from '../../contexts/AuthProvider.jsx';
 
 const LoginPage = () => {
   const { t } = useTranslation();
-  const [authError, setAuthError] = useState(false);
+  const [authError, setAuthError] = useState(null);
   const { logIn } = useAuth();
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      setAuthError(false);
+      setAuthError(null);
       const {
         token,
         username: returnedUser,
@@ -37,7 +37,7 @@ const LoginPage = () => {
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
-      setAuthError(true);
+      setAuthError(t('errors.invalidFeedback'));
     } finally {
       setSubmitting(false);
     }
@@ -47,39 +47,26 @@ const LoginPage = () => {
     <div>
       <h2>{t('entry')}</h2>
 
+      {authError && <div style={{ color: 'red' }}>{authError}</div>}
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, errors, touched }) => (
-          <Form noValidate>
+        {({ isSubmitting }) => (
+          <Form>
             <div>
-              <label htmlFor="username">{t('placeholders.username')}</label>
-              <Field
-                as={BootstrapForm.Control}
-                id="username"
-                name="username"
-                type="text"
-                isInvalid={touched.username && errors.username}
-              />
-              <BootstrapForm.Control.Feedback type="invalid">
-                <ErrorMessage name="username" />
-              </BootstrapForm.Control.Feedback>
+              {/* 👇 Aseguramos que el texto sea visible para Playwright */}
+              <label htmlFor="username">{t('placeholders.login')}</label>
+              <Field id="username" name="username" type="text" />
+              <ErrorMessage name="username" component="div" />
             </div>
 
             <div>
               <label htmlFor="password">{t('placeholders.password')}</label>
-              <Field
-                as={BootstrapForm.Control}
-                id="password"
-                name="password"
-                type="password"
-                isInvalid={authError || (touched.password && errors.password)}
-              />
-              <BootstrapForm.Control.Feedback type="invalid" style={{ display: 'block' }}>
-                {authError ? t('errors.invalidFeedback') : <ErrorMessage name="password" />}
-              </BootstrapForm.Control.Feedback>
+              <Field id="password" name="password" type="password" />
+              <ErrorMessage name="password" component="div" />
             </div>
 
             <button type="submit" disabled={isSubmitting}>
@@ -90,7 +77,8 @@ const LoginPage = () => {
       </Formik>
 
       <p>
-        {t('noAccount')}{' '}
+        {t('noAccount')}
+        {' '}
         <Link to="/signup">
           {t('makeRegistration')}
         </Link>
