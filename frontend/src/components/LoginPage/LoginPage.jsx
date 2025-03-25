@@ -46,7 +46,11 @@ const LoginPage = () => {
     <div>
       <h2>{t('entry')}</h2>
 
-      {authError && <div style={{ color: 'red' }}>{authError}</div>}
+      {authError && (
+        <div role="alert" data-testid="auth-error" style={{ color: 'red' }}>
+          {authError}
+        </div>
+      )}
 
       <Formik
         initialValues={initialValues}
