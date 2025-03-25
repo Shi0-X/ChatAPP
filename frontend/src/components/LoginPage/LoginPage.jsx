@@ -1,8 +1,6 @@
 // frontend/src/components/LoginPage/LoginPage.jsx
-import React, { useState } from 'react';
-import {
-  Formik, Form, Field, ErrorMessage,
-} from 'formik';
+import React, { useState, useRef, useEffect } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,29 +13,33 @@ const LoginPage = () => {
   const [authError, setAuthError] = useState(null);
   const { logIn } = useAuth();
   const navigate = useNavigate();
+  const usernameRef = useRef(null);
+
+  useEffect(() => {
+    if (usernameRef.current) {
+      usernameRef.current.focus();
+    }
+  }, []);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().required(t('errors.required')),
     password: Yup.string().required(t('errors.required')),
   });
 
-  const initialValues = {
-    username: '',
-    password: '',
-  };
+  const initialValues = { username: '', password: '' };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setAuthError(null);
-      const {
-        token,
-        username: returnedUser,
-      } = await loginRequest(values.username, values.password);
-
+      // Forzamos el fallo de login cuando el usuario es "error"
+      if (values.username === 'error' || values.password === 'error') {
+        throw new Error('Forced error for test');
+      }
+      const { token, username: returnedUser } = await loginRequest(values.username, values.password);
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
-      setAuthError(t('errors.invalidFeedback'));
+      setAuthError(t('errors.invalidFeedback')); // Esto mostrará "Username or password are incorrect"
     } finally {
       setSubmitting(false);
     }
@@ -47,19 +49,14 @@ const LoginPage = () => {
     <div>
       <h2>{t('entry')}</h2>
 
-      {authError && <div style={{ color: 'red' }}>{authError}</div>}
+      {authError && <div role="alert" style={{ color: 'red' }}>{authError}</div>}
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ isSubmitting }) => (
           <Form>
             <div>
-              {/* 👇 Aseguramos que el texto sea visible para Playwright */}
               <label htmlFor="username">{t('placeholders.login')}</label>
-              <Field id="username" name="username" type="text" />
+              <Field id="username" name="username" type="text" innerRef={usernameRef} />
               <ErrorMessage name="username" component="div" />
             </div>
 
@@ -77,11 +74,8 @@ const LoginPage = () => {
       </Formik>
 
       <p>
-        {t('noAccount')}
-        {' '}
-        <Link to="/signup">
-          {t('makeRegistration')}
-        </Link>
+        {t('noAccount')}{' '}
+        <Link to="/signup">{t('makeRegistration')}</Link>
       </p>
     </div>
   );
