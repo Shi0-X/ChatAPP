@@ -31,15 +31,19 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      window.location.href = '/login';
+      // Opción #1: Solo redirige a /login si YA había un token (usuario logueado).
+      const token = localStorage.getItem('token');
+      if (token) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   },
 );
 
-// ----- FUNCIONES DE LOGIN, GET CHANNELS, GET MESSAGES ----- //
+// ----- FUNCIONES DE LOGIN, SIGNUP, GET CHANNELS, GET MESSAGES ----- //
 export const login = async (username, password) => {
   try {
     const response = await api.post('/login', { username, password });
@@ -65,7 +69,6 @@ export const login = async (username, password) => {
 };
 
 export const signup = async (username, password) => {
-  // Eliminamos el try/catch si solo relanzamos el mismo error
   const response = await api.post('/signup', { username, password });
   return response.data;
 };
