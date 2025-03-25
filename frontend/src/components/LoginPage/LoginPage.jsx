@@ -38,7 +38,6 @@ const LoginPage = () => {
       navigate('/');
     } catch (error) {
       setAuthError(t('errors.invalidFeedback'));
-      await new Promise((r) => setTimeout(r, 1000));
     } finally {
       setSubmitting(false);
     }
