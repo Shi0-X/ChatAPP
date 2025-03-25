@@ -56,7 +56,7 @@ const LoginPage = () => {
         {({ isSubmitting }) => (
           <Form>
             <div>
-              <label htmlFor="username">{t('placeholders.username')}</label>
+              <label htmlFor="username">{t('placeholders.login')}</label>
               <Field id="username" name="username" type="text" />
               <ErrorMessage name="username" component="div" />
             </div>
