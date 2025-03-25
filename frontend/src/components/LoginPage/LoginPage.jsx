@@ -1,5 +1,4 @@
-// frontend/src/components/LoginPage/LoginPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
@@ -12,9 +11,16 @@ import { useAuth } from '../../contexts/AuthProvider.jsx';
 
 const LoginPage = () => {
   const { t } = useTranslation();
-  const [authError, setAuthError] = useState(null);
+  const [authFailed, setAuthFailed] = useState(false);
   const { logIn } = useAuth();
   const navigate = useNavigate();
+  const usernameRef = useRef(null);
+
+  useEffect(() => {
+    if (usernameRef.current) {
+      usernameRef.current.focus();
+    }
+  }, []);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().required(t('errors.required')),
@@ -28,7 +34,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      setAuthError(null);
+      setAuthFailed(false);
       const {
         token,
         username: returnedUser,
@@ -37,7 +43,7 @@ const LoginPage = () => {
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
-      setAuthError(t('errors.invalidFeedback')); // Este texto está bien en el archivo de idiomas
+      setAuthFailed(true);
     } finally {
       setSubmitting(false);
     }
@@ -52,25 +58,32 @@ const LoginPage = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, touched, errors }) => (
           <Form>
-            {/* Mensaje de error de autenticación, visible para Playwright */}
-            {authError && (
-              <div role="alert" style={{ color: 'red' }}>
-                {authError}
-              </div>
-            )}
-
             <div>
               <label htmlFor="username">{t('placeholders.login')}</label>
-              <Field id="username" name="username" type="text" />
+              <Field
+                id="username"
+                name="username"
+                type="text"
+                innerRef={usernameRef}
+              />
               <ErrorMessage name="username" component="div" />
             </div>
 
             <div>
               <label htmlFor="password">{t('placeholders.password')}</label>
-              <Field id="password" name="password" type="password" />
-              <ErrorMessage name="password" component="div" />
+              <Field
+                id="password"
+                name="password"
+                type="password"
+              />
+              {/* 👇 Este es el cambio CLAVE */}
+              {(authFailed || (touched.password && errors.password)) && (
+                <div role="alert" style={{ color: 'red' }}>
+                  {authFailed ? t('errors.invalidFeedback') : errors.password}
+                </div>
+              )}
             </div>
 
             <button type="submit" disabled={isSubmitting}>
