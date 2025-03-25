@@ -1,4 +1,3 @@
-// frontend/src/components/SignupPage/SignupPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -10,25 +9,28 @@ const SignupPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { logIn } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    const newErrors = [];
 
     if (username.length < 3 || username.length > 20) {
-      setError(t('regRules.name'));
-      return;
+      newErrors.push(t('regRules.name'));
     }
     if (password.length < 6) {
-      setError(t('regRules.password'));
-      return;
+      newErrors.push(t('regRules.password'));
     }
     if (password !== confirm) {
-      setError(t('regRules.passwordEquality'));
+      newErrors.push(t('regRules.passwordEquality'));
+    }
+
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -38,9 +40,9 @@ const SignupPage = () => {
       navigate('/');
     } catch (err) {
       if (err.response?.status === 409) {
-        setError(t('errors.userExist'));
+        setErrors([t('errors.userExist')]);
       } else {
-        setError(t('error'));
+        setErrors([t('error')]);
       }
     }
   };
@@ -48,7 +50,14 @@ const SignupPage = () => {
   return (
     <div>
       <h2>{t('registration')}</h2>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+
+      {errors.length > 0 && (
+        <div style={{ color: 'red' }}>
+          {errors.map((err, i) => (
+            <div key={i}>{err}</div>
+          ))}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div>
