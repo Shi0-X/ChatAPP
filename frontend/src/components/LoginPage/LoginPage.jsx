@@ -37,7 +37,7 @@ const LoginPage = () => {
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
-      setAuthError(t('errors.invalidFeedback'));
+      setAuthError(t('errors.invalidFeedback')); // Este texto está bien en el archivo de idiomas
     } finally {
       setSubmitting(false);
     }
@@ -47,8 +47,6 @@ const LoginPage = () => {
     <div>
       <h2>{t('entry')}</h2>
 
-      {authError && <div style={{ color: 'red' }}>{authError}</div>}
-
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -56,8 +54,14 @@ const LoginPage = () => {
       >
         {({ isSubmitting }) => (
           <Form>
+            {/* Mensaje de error de autenticación, visible para Playwright */}
+            {authError && (
+              <div role="alert" style={{ color: 'red' }}>
+                {authError}
+              </div>
+            )}
+
             <div>
-              {/* 👇 Aseguramos que el texto sea visible para Playwright */}
               <label htmlFor="username">{t('placeholders.login')}</label>
               <Field id="username" name="username" type="text" />
               <ErrorMessage name="username" component="div" />
