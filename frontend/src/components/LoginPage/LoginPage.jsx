@@ -31,15 +31,11 @@ const LoginPage = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setAuthError(null);
-      // Forzamos el fallo de login cuando el usuario es "error"
-      if (values.username === 'error' || values.password === 'error') {
-        throw new Error('Forced error for test');
-      }
       const { token, username: returnedUser } = await loginRequest(values.username, values.password);
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
-      setAuthError(t('errors.invalidFeedback')); // Esto mostrará "Username or password are incorrect"
+      setAuthError(t('errors.invalidFeedback'));
     } finally {
       setSubmitting(false);
     }
@@ -49,7 +45,11 @@ const LoginPage = () => {
     <div>
       <h2>{t('entry')}</h2>
 
-      {authError && <div role="alert" style={{ color: 'red' }}>{authError}</div>}
+      {authError && (
+        <div role="alert" style={{ color: 'red' }}>
+          {authError}
+        </div>
+      )}
 
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ isSubmitting }) => (
@@ -75,7 +75,9 @@ const LoginPage = () => {
 
       <p>
         {t('noAccount')}{' '}
-        <Link to="/signup">{t('makeRegistration')}</Link>
+        <button type="button" onClick={() => navigate('/signup')}>
+          {t('makeRegistration')}
+        </button>
       </p>
     </div>
   );
