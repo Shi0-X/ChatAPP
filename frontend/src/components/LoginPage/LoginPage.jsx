@@ -36,7 +36,7 @@ const LoginPage = () => {
       logIn(token, returnedUser);
       navigate('/');
     } catch (error) {
-      setAuthError(t('invalidFeedback'));
+      setAuthError(t('errors.invalidFeedback'));
     } finally {
       setSubmitting(false);
     }
