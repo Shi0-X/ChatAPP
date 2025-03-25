@@ -62,7 +62,7 @@ const en = {
     },
 
     errors: {
-      invalidFeedback: 'Invalid username or password',
+      invalidFeedback: 'Username or password are incorrect',
       userExist: 'This user already exists',
       required: 'Required field',
       network: 'Connection error',
