@@ -58,7 +58,7 @@ const LoginPage = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, touched, errors }) => (
+        {({ isSubmitting }) => (
           <Form>
             <div>
               <label htmlFor="username">{t('placeholders.login')}</label>
@@ -78,13 +78,14 @@ const LoginPage = () => {
                 name="password"
                 type="password"
               />
-              {/* 👇 Este es el cambio CLAVE */}
-              {(authFailed || (touched.password && errors.password)) && (
-                <div role="alert" style={{ color: 'red' }}>
-                  {authFailed ? t('errors.invalidFeedback') : errors.password}
-                </div>
-              )}
+              <ErrorMessage name="password" component="div" />
             </div>
+
+            {authFailed && (
+              <div role="alert" style={{ color: 'red' }}>
+                {t('errors.invalidFeedback')}
+              </div>
+            )}
 
             <button type="submit" disabled={isSubmitting}>
               {isSubmitting ? t('loading') : t('entry')}
