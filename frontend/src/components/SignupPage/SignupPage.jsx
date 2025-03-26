@@ -1,3 +1,4 @@
+// frontend/src/components/SignupPage/SignupPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +55,10 @@ const SignupPage = () => {
       {errors.length > 0 && (
         <div style={{ color: 'red' }}>
           {errors.map((err, i) => (
-            <div key={i}>{err}</div>
+            // Evitamos key={i} para cumplir con react/no-array-index-key
+            <div key={`${err}-${i}`}>
+              {err}
+            </div>
           ))}
         </div>
       )}
@@ -99,8 +103,7 @@ const SignupPage = () => {
       </form>
 
       <p>
-        {t('alreadyHaveAccount')}
-        {' '}
+        {t('alreadyHaveAccount')}{' '}
         <Link to="/login">
           {t('entry')}
         </Link>

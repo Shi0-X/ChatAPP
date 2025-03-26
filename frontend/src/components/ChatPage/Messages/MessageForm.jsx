@@ -2,11 +2,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import leoProfanity from 'leo-profanity';
+import leoProfanity from 'leo-profanity'; // (Ya importado para limpiar texto)
 import { useAuth } from '../../../contexts/AuthProvider.jsx';
 import { addMessage } from '../../../slices/thunks.js';
-
-// 1) Importar leo-profanity
 
 const MessageForm = () => {
   const dispatch = useDispatch();
@@ -23,7 +21,7 @@ const MessageForm = () => {
       return;
     }
 
-    // 2) Limpiar el texto de blasfemias antes de enviarlo
+    // Limpieza de blasfemias antes de enviar
     const cleanedText = leoProfanity.clean(text);
 
     const payload = {
@@ -40,7 +38,7 @@ const MessageForm = () => {
     <div>
       <h3>{t('newMessage')}</h3>
       <form onSubmit={handleSubmit}>
-      <input
+        <input
           type="text"
           placeholder={t('placeholders.newMessage')}
           aria-label={t('newMessage')}
