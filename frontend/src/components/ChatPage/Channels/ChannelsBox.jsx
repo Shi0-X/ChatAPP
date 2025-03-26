@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { openModal } from '../../../slices/modalSlice.js';
 import { setCurrentChannelId } from '../../../slices/channelsSlice.js';
-// import Channel from './Channel.jsx'; // <-- Se elimina, no se usa
 
 const ChannelsBox = () => {
   const dispatch = useDispatch();
@@ -38,7 +37,12 @@ const ChannelsBox = () => {
       <ul>
         {channels.map((ch) => (
           <li key={ch.id} style={{ margin: '5px 0' }}>
+            {/* Label asociado al botón para accesibilidad y test */}
+            <label className="visually-hidden" htmlFor={`channel-${ch.id}`}>
+              {t('modal.menu')}
+            </label>
             <button
+              id={`channel-${ch.id}`}
               type="button"
               onClick={() => handleSelectChannel(ch.id)}
               style={{ fontWeight: ch.id === currentChannelId ? 'bold' : 'normal' }}

@@ -53,6 +53,7 @@ const en = {
       confirm: 'Are you sure?',
       unique: 'Must be unique',
       lengthParams: 'From 3 to 20 characters',
+      menu: 'Manage channel',
     },
 
     success: {

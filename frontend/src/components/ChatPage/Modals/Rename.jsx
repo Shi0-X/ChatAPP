@@ -57,19 +57,19 @@ const Rename = () => {
         <h2>{t('modal.renameChannel')}</h2>
         <p>{`${t('modal.toggle')}: ${currentChannel?.name}`}</p>
         <form onSubmit={handleSubmit}>
-          {/* Label asociado al input para accesibilidad y para que el test lo identifique */}
-          <label className="visually-hidden" htmlFor="name">
-            {t('modal.channelName')}
-          </label>
           <input
-            id="name"
-            name="name"
             ref={inputRef}
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder={t('modal.channelName')}
+            name="name"
+            id="name"
           />
+          <label className="visually-hidden" htmlFor="name">
+            {t('modal.channelName')}
+          </label>
+
           <button type="submit">{t('modal.rename')}</button>
           <button type="button" onClick={handleCancel}>
             {t('cancel')}

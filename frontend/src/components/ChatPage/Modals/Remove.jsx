@@ -37,8 +37,16 @@ const Remove = () => {
       <div className="modal">
         <h2>{t('modal.removeChannel')}</h2>
         <p>{t('modal.confirm')}</p>
-        <button type="button" onClick={handleConfirm}>{t('send')}</button>
-        <button type="button" onClick={handleCancel}>{t('cancel')}</button>
+        <button
+          type="button"
+          className="btn-danger"
+          onClick={handleConfirm}
+        >
+          {t('send')}
+        </button>
+        <button type="button" onClick={handleCancel}>
+          {t('cancel')}
+        </button>
       </div>
     </div>
   );
