@@ -40,9 +40,10 @@ const MessageForm = () => {
     <div>
       <h3>{t('newMessage')}</h3>
       <form onSubmit={handleSubmit}>
-        <input
+      <input
           type="text"
           placeholder={t('placeholders.newMessage')}
+          aria-label={t('newMessage')}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
