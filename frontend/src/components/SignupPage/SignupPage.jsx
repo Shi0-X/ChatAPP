@@ -103,7 +103,8 @@ const SignupPage = () => {
       </form>
 
       <p>
-        {t('alreadyHaveAccount')}{' '}
+        {t('alreadyHaveAccount')}
+        <span> </span>
         <Link to="/login">
           {t('entry')}
         </Link>
