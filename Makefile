@@ -12,7 +12,7 @@ start-frontend:
 	make -C frontend start-frontend
 
 start:
-	make -C frontend start
+	make -C frontend start-frontend
 
 build:
 	make -C frontend build
