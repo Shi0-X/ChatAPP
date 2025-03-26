@@ -54,9 +54,8 @@ const SignupPage = () => {
 
       {errors.length > 0 && (
         <div style={{ color: 'red' }}>
-          {errors.map((err, i) => (
-            // Evitamos key={i} para cumplir con react/no-array-index-key
-            <div key={`${err}-${i}`}>
+          {errors.map((err) => (
+            <div key={err}>
               {err}
             </div>
           ))}
