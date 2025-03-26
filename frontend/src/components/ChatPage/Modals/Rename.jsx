@@ -1,7 +1,7 @@
 // frontend/src/components/ChatPage/Modals/Rename.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify'; // Importar toast
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { renameChannel } from '../../../slices/thunks.js';
 import { closeModal } from '../../../slices/modalSlice.js';
@@ -39,11 +39,9 @@ const Rename = () => {
     }
     try {
       await dispatch(renameChannel({ id: channelId, newName: newName.trim() })).unwrap();
-      // Éxito => toast success
       toast.success(t('success.renameChannel')); // "Channel renamed"
       dispatch(closeModal());
     } catch (err) {
-      // Error => toast error
       toast.error(t('errors.channelRename')); // "Error renaming channel"
       console.error(t('errors.channelRename'), err);
     }
@@ -59,7 +57,13 @@ const Rename = () => {
         <h2>{t('modal.renameChannel')}</h2>
         <p>{`${t('modal.toggle')}: ${currentChannel?.name}`}</p>
         <form onSubmit={handleSubmit}>
+          {/* Label asociado al input para accesibilidad y para que el test lo identifique */}
+          <label className="visually-hidden" htmlFor="name">
+            {t('modal.channelName')}
+          </label>
           <input
+            id="name"
+            name="name"
             ref={inputRef}
             type="text"
             value={newName}
@@ -67,7 +71,9 @@ const Rename = () => {
             placeholder={t('modal.channelName')}
           />
           <button type="submit">{t('modal.rename')}</button>
-          <button type="button" onClick={handleCancel}>{t('cancel')}</button>
+          <button type="button" onClick={handleCancel}>
+            {t('cancel')}
+          </button>
         </form>
       </div>
     </div>
