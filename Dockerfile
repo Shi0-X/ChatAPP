@@ -11,20 +11,24 @@ COPY package.json package-lock.json ./
 COPY frontend/package.json frontend/package-lock.json ./frontend/
 
 # Instala dependencias en la raíz y en frontend
-RUN npm install && cd frontend && npm install
+RUN npm ci && cd frontend && npm ci
 
 # Copia el resto del código después de instalar dependencias
 COPY . .
 
-# Construye el frontend (Create React App) dentro de "frontend/"
+# Construye el frontend (Create React App) dentro de "frontend/",
+# configurado para que el resultado vaya a "../dist"
 RUN cd frontend && npm run build
 
-# Copia la carpeta de build a la raíz, quedando en /app/build
-RUN cp -R ./frontend/build ./build
+# Copia la carpeta dist a /app/dist
+# (asumiendo que tu build está configurado para generarse en "frontend/dist")
+RUN cp -R ./frontend/dist ./dist
 
 # Expone el puerto en el que correrá la aplicación
 EXPOSE 5001
 
-# Comando de inicio del servidor que sirve /app/build
-CMD ["npx", "start-server", "./build"]
+# Instala "serve" para servir la carpeta dist con fallback de rutas
+RUN npm install --location=global serve
 
+# Comando de inicio del servidor que sirve /app/dist en el puerto 5001
+CMD ["serve", "-s", "dist", "-l", "5001"]
